@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+export OPENSSL_DIR=$PREFIX
 export CARGO_BUILD_RUSTFLAGS="${CARGO_BUILD_RUSTFLAGS} -L$PREFIX/lib"
 
 cargo-bundle-licenses \
