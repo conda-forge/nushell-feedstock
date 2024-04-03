@@ -3,7 +3,7 @@ cargo-bundle-licenses ^
     --output THIRDPARTY_LICENSES.yaml || goto :error
 
 REM TODO: Add --locked on next release
-cargo install --locked --features dataframe,extra --root "%PREFIX%" --path . || goto :error
+cargo install --features dataframe,extra --root "%PREFIX%" --path . || goto :error
 
 goto :EOF
 
