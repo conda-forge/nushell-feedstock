@@ -8,6 +8,6 @@ cargo-bundle-licenses \
     --output THIRDPARTY_LICENSES.yaml
 
 # TODO: add --locked on next release
-cargo install --features dataframe,extra --root "$PREFIX" --path .
+cargo install --features dataframe --root "$PREFIX" --path .
 
 "$STRIP" "$PREFIX/bin/nu"
