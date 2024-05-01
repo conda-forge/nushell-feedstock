@@ -1,5 +1,5 @@
 {% set name = "nushell" %}
-{% set version = "0.92.2" %}
+{% set version = "0.93.0" %}
 
 package:
   name: {{ name | lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/{{ name }}/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
-  sha256: d0424380981164137b9db31f686b048b7a4b9fce1a2e06ae6b8e58df0b8c4d64
+  sha256: 00dcd5ab112d8afd683aa0b87b65b2e47a45487857a6d2481ce7eeb0045c2c00
 
 build:
   number: 0
@@ -16,6 +16,7 @@ requirements:
   build:
     - {{ compiler('rust') }}
     - {{ compiler('c') }}
+    - {{ stdlib("c") }}
     - {{ compiler('cxx') }}
     - cargo-bundle-licenses
   host:
