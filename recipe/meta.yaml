@@ -7,10 +7,10 @@ package:
 
 source:
   url: https://github.com/{{ name }}/{{ name }}/archive/refs/tags/{{ version }}.tar.gz
-  sha256: 98e2ab205910fb80ebea669151395467336c50f34c4e247b2c36d3c3c1c0aed6
+  sha256: 00b94984d3140e286e06d4beca2926ef80e0a0cc3ada75916e4fb9fa66ec28ad
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   build:
