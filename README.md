@@ -193,4 +193,5 @@ Feedstock Maintainers
 =====================
 
 * [@pavelzw](https://github.com/pavelzw/)
+* [@thebigdalt](https://github.com/thebigdalt/)
 
