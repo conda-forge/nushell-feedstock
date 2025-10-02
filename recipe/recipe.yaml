@@ -1,0 +1,65 @@
+context:
+  version: "0.106.1"
+
+package:
+  name: nushell
+  version: ${{ version }}
+
+source:
+  url: https://github.com/nushell/nushell/archive/refs/tags/${{ version }}.tar.gz
+  sha256: 3e24044c354d050a850b69dc77c99cc503542c3d9d75fed0aef1c12fefdf380b
+
+build:
+  number: 1
+  script:
+    env:
+      CARGO_PROFILE_RELEASE_STRIP: symbols
+      CARGO_PROFILE_RELEASE_LTO: fat
+    content:
+      # Tell `pixi global` to not set CONDA_PREFIX during activation
+      # https://pixi.sh/dev/global_tools/introduction/#opt-out-of-conda_prefix
+      - if: win
+        then:
+          - if not exist "%PREFIX%\\etc\\pixi" mkdir "%PREFIX%\\etc\\pixi\\nu"
+          - type nul > "%PREFIX%\\etc\\pixi\\nu\\global-ignore-conda-prefix"
+        else:
+          - mkdir -p "${PREFIX}/etc/pixi/nu"
+          - touch "${PREFIX}/etc/pixi/nu/global-ignore-conda-prefix"
+      - if: linux
+        then:
+          - export OPENSSL_DIR=$PREFIX
+          - export CARGO_BUILD_RUSTFLAGS="${CARGO_BUILD_RUSTFLAGS} -L$PREFIX/lib"
+      - cargo auditable install --locked --no-track --bins --root ${{ PREFIX }} --path .
+      - cargo-bundle-licenses --format yaml --output ./THIRDPARTY.yml
+
+
+requirements:
+  build:
+    - ${{ compiler('rust') }}
+    - ${{ compiler('c') }}
+    - ${{ stdlib("c") }}
+    - ${{ compiler('cxx') }}
+    - cargo-bundle-licenses
+    - cargo-auditable
+  host:
+    - zlib
+    - openssl
+
+tests: 
+  - script:
+    - nu --version
+    - nu --help
+
+about:
+  homepage: https://nushell.sh
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRDPARTY_LICENSES.yaml
+  summary: A new type of shell
+  repository: https://github.com/nushell/nushell
+
+extra:
+  recipe-maintainers:
+    - thebigdalt
+    - pavelzw
