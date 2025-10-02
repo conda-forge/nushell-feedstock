@@ -11,3 +11,5 @@ github:
 test: native_and_emulated
 bot:
   automerge: true
+conda_install_tool: pixi
+conda_build_tool: rattler-build
