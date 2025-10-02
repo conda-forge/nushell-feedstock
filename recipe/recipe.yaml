@@ -14,7 +14,6 @@ build:
   script:
     env:
       CARGO_PROFILE_RELEASE_STRIP: symbols
-      CARGO_PROFILE_RELEASE_LTO: fat
     content:
       # Tell `pixi global` to not set CONDA_PREFIX during activation
       # https://pixi.sh/dev/global_tools/introduction/#opt-out-of-conda_prefix
@@ -30,7 +29,7 @@ build:
           - export OPENSSL_DIR=$PREFIX
           - export CARGO_BUILD_RUSTFLAGS="${CARGO_BUILD_RUSTFLAGS} -L$PREFIX/lib"
       - cargo auditable install --locked --no-track --bins --root ${{ PREFIX }} --path .
-      - cargo-bundle-licenses --format yaml --output ./THIRDPARTY.yml
+      - cargo-bundle-licenses --format yaml --output ./THIRDPARTY_LICENSES.yaml
 
 
 requirements:
