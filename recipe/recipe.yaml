@@ -10,7 +10,9 @@ source:
   sha256: b6087622414448edc3cf2ab44a339ad7a1de24de92ed7dc425da504f767f25bb
 
 build:
-  number: 0
+  number: 1
+  prefix_detection:
+    ignore_binary_files: true
   script:
     env:
       CARGO_PROFILE_RELEASE_STRIP: symbols
