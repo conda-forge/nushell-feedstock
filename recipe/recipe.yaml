@@ -1,5 +1,5 @@
 context:
-  version: "0.109.0"
+  version: "0.109.1"
 
 package:
   name: nushell
@@ -7,10 +7,10 @@ package:
 
 source:
   url: https://github.com/nushell/nushell/archive/refs/tags/${{ version }}.tar.gz
-  sha256: b6087622414448edc3cf2ab44a339ad7a1de24de92ed7dc425da504f767f25bb
+  sha256: 53d4611113a17ed3a29b0c81ea981d546a40dafca77fdcd9af7a7629ceabf48f
 
 build:
-  number: 1
+  number: 0
   prefix_detection:
     ignore_binary_files: true
   script:
