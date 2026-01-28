@@ -10,20 +10,25 @@ $env.CARGO_BUILD_RUSTFLAGS = $'($env.CARGO_BUILD_RUSTFLAGS?) -L($env.PREFIX)/lib
 $env.CARGO_PROFILE_RELEASE_STRIP = "symbols"
 
 # Directory that contains the nu executable
-let nu_path = '.'
+let nu_path = '.' | path expand
 
 # Directory list for nu-plugin executables
 # 
 # Logic to identify plugin folder taken from homebrew formula
 # https://github.com/Homebrew/homebrew-core/blob/566df2fba07c4100481cfc893ebe7c55f7306bc9/Formula/n/nushell.rb#L42-L43
 let nu_plugin_paths = glob 'crates/nu_plugin_*'
-  | where (
-    $'($it)/Cargo.toml'
-    | path exists
-  )
+  | where ($'($it)/Cargo.toml' | path exists)
+  | path expand
 
-$nu_path | append $nu_plugin_paths | each {
-  ^cargo auditable install --locked --no-track --bins --root $env.PREFIX --path $in
+let license_dir = './license-files' | path expand
+mkdir $license_dir
+
+$nu_path
+| append $nu_plugin_paths
+| each {
+  let license_file = $in | path parse | get stem | $'($license_dir)/($in)_thirdparty_licenses.yaml'
+
+  cd $in
+  ^cargo auditable install --locked --no-track --bins --root $env.PREFIX --path .
+  ^cargo-bundle-licenses --format yaml --output $license_file
 }
-
-^cargo-bundle-licenses --format yaml --output ./THIRDPARTY_LICENSES.yaml

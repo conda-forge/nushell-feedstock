@@ -43,7 +43,7 @@ about:
   license: MIT
   license_file:
     - LICENSE
-    - THIRDPARTY_LICENSES.yaml
+    - license-files/
   summary: A new type of shell
   repository: https://github.com/nushell/nushell
 
