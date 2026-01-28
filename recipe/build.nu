@@ -15,7 +15,7 @@ let nu_path = '.'
 # Directory list for nu-plugin executables
 # 
 # Logic to identify plugin folder taken from homebrew formula
-# https://github.com/Homebrew/homebrew-core/blob/main/Formula/n/nushell.rb#L42-L43
+# https://github.com/Homebrew/homebrew-core/blob/566df2fba07c4100481cfc893ebe7c55f7306bc9/Formula/n/nushell.rb#L42-L43
 let nu_plugin_paths = glob 'crates/nu_plugin_*'
   | where (
     $'($it)/Cargo.toml'
