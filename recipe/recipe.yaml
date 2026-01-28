@@ -27,6 +27,8 @@ requirements:
   host:
     - zlib
     - openssl
+    - if: osx
+      then: libgit2
 
 tests:
   - package_contents:
