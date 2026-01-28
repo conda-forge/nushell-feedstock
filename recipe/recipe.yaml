@@ -29,6 +29,11 @@ requirements:
     - openssl
 
 tests:
+  - package_contents:
+      files:
+        - bin/nu_plugin_*
+      bin:
+        - nu
   - script:
       - nu --version
       - nu --help
