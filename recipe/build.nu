@@ -9,12 +9,12 @@ $env.OPENSSL_DIR = $env.PREFIX
 $env.CARGO_BUILD_RUSTFLAGS = $'($env.CARGO_BUILD_RUSTFLAGS?) -L($env.PREFIX)/lib'
 $env.CARGO_PROFILE_RELEASE_STRIP = "symbols"
 
-# Directory that contains the nu executable
+# Directory that contains `nu` code
 let nu_path = '.' | path expand
 
-# Directory list for nu-plugin executables
+# Directory list for `nu_plugin_*` code
 # 
-# Logic to identify plugin folder taken from homebrew formula
+# Logic to identify plugin folder taken from nushell's homebrew formula
 # https://github.com/Homebrew/homebrew-core/blob/566df2fba07c4100481cfc893ebe7c55f7306bc9/Formula/n/nushell.rb#L42-L43
 let nu_plugin_paths = glob 'crates/nu_plugin_*'
   | where ($'($it)/Cargo.toml' | path exists)
