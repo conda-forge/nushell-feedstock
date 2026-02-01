@@ -35,6 +35,7 @@ tests:
       strict: true
       files:
         - bin/nu_plugin_*
+        - etc/pixi/nu/global-ignore-conda-prefix
       bin:
         - nu
   - script:
