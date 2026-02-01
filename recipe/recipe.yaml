@@ -10,29 +10,10 @@ source:
   sha256: e4c95f743cea3d985ab90e03fd35707a46eef926d407ed363f994155c1ca5055
 
 build:
-  number: 0
+  number: 1
+  script: build.nu
   prefix_detection:
     ignore_binary_files: true
-  script:
-    env:
-      CARGO_PROFILE_RELEASE_STRIP: symbols
-    content:
-      # Tell `pixi global` to not set CONDA_PREFIX during activation
-      # https://pixi.sh/dev/global_tools/introduction/#opt-out-of-conda_prefix
-      - if: win
-        then:
-          - if not exist "%PREFIX%\\etc\\pixi" mkdir "%PREFIX%\\etc\\pixi\\nu"
-          - type nul > "%PREFIX%\\etc\\pixi\\nu\\global-ignore-conda-prefix"
-        else:
-          - mkdir -p "${PREFIX}/etc/pixi/nu"
-          - touch "${PREFIX}/etc/pixi/nu/global-ignore-conda-prefix"
-      - if: linux
-        then:
-          - export OPENSSL_DIR=$PREFIX
-          - export CARGO_BUILD_RUSTFLAGS="${CARGO_BUILD_RUSTFLAGS} -L$PREFIX/lib"
-      - cargo auditable install --locked --no-track --bins --root ${{ PREFIX }} --path .
-      - cargo-bundle-licenses --format yaml --output ./THIRDPARTY_LICENSES.yaml
-
 
 requirements:
   build:
@@ -42,11 +23,21 @@ requirements:
     - ${{ compiler('cxx') }}
     - cargo-bundle-licenses
     - cargo-auditable
+    - nushell # script dependency
   host:
     - zlib
     - openssl
+    - if: osx
+      then: libgit2
 
 tests:
+  - package_contents:
+      strict: true
+      files:
+        - bin/nu_plugin_*
+        - etc/pixi/nu/global-ignore-conda-prefix
+      bin:
+        - nu
   - script:
       - nu --version
       - nu --help
@@ -56,7 +47,7 @@ about:
   license: MIT
   license_file:
     - LICENSE
-    - THIRDPARTY_LICENSES.yaml
+    - license-files/
   summary: A new type of shell
   repository: https://github.com/nushell/nushell
 
