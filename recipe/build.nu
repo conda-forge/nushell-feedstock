@@ -11,7 +11,12 @@ $env.CARGO_PROFILE_RELEASE_STRIP = "symbols"
 
 $env.NU_VENDOR_AUTOLOAD_DIR = $'($env.PREFIX)/share/nushell/vendor/autoload'
 mkdir $env.NU_VENDOR_AUTOLOAD_DIR
-cp $'($env.RECIPE_DIR)/set-nu-lib-dirs.nu' $'($env.NU_VENDOR_AUTOLOAD_DIR)/set-nu-lib-dirs.nu'
+# Write set-nu-lib-dirs.nu with the expanded prefix path.
+# Conda will handle prefix replacement at install time.
+let nu_lib_dir = [$env.PREFIX "share" "nushell" "lib"] | path join
+$'# Use a hardcoded path instead of $env.CONDA_PREFIX because it is not set in `pixi global install nushell`
+$env.NU_LIB_DIRS ++= ["($nu_lib_dir)"]
+' | save -f $'($env.NU_VENDOR_AUTOLOAD_DIR)/set-nu-lib-dirs.nu'
 
 # only needed because of https://github.com/prefix-dev/rattler-build/issues/2133
 # otherwise we could use the compile time variant instead
