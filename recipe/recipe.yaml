@@ -10,7 +10,7 @@ source:
   sha256: e4c95f743cea3d985ab90e03fd35707a46eef926d407ed363f994155c1ca5055
 
 build:
-  number: 1
+  number: 2
   script: build.nu
   prefix_detection:
     ignore_binary_files: true
@@ -41,6 +41,7 @@ tests:
   - script:
       - nu --version
       - nu --help
+      - nu test-nu.nu
 
 about:
   homepage: https://nushell.sh

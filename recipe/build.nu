@@ -9,11 +9,15 @@ $env.OPENSSL_DIR = $env.PREFIX
 $env.CARGO_BUILD_RUSTFLAGS = $'($env.CARGO_BUILD_RUSTFLAGS?) -L($env.PREFIX)/lib'
 $env.CARGO_PROFILE_RELEASE_STRIP = "symbols"
 
+$env.NU_VENDOR_AUTOLOAD_DIR = $'($env.PREFIX)/share/nushell/vendor/autoload'
+mkdir $env.NU_VENDOR_AUTOLOAD_DIR
+cp $'($env.RECIPE_DIR)/set-nu-lib-dirs.nu' $'($env.NU_VENDOR_AUTOLOAD_DIR)/set-nu-lib-dirs.nu'
+
 # Directory that contains `nu` code
 let nu_path = '.' | path expand
 
 # Directory list for `nu_plugin_*` code
-# 
+#
 # Logic to identify plugin folder taken from nushell's homebrew formula
 # https://github.com/Homebrew/homebrew-core/blob/566df2fba07c4100481cfc893ebe7c55f7306bc9/Formula/n/nushell.rb#L42-L43
 let nu_plugin_paths = glob 'crates/nu_plugin_*'
