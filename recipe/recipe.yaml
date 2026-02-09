@@ -15,6 +15,9 @@ source:
 build:
   number: 2
   script: build.nu
+  # https://github.com/prefix-dev/rattler-build/issues/2133
+  prefix_detection:
+    ignore_binary_files: true
 
 requirements:
   build:
@@ -40,7 +43,7 @@ tests:
         - share/nushell/vendor/autoload/set-nu-lib-dirs.nu
         - etc/conda/test-files/nushell/0/test-nu.nu
         # https://github.com/prefix-dev/rattler-build/issues/2133
-        # - etc/conda/env_vars.d/nushell.json
+        - etc/conda/env_vars.d/nushell.json
       bin:
         - nu
   - files:
