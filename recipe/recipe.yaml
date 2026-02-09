@@ -15,8 +15,6 @@ source:
 build:
   number: 2
   script: build.nu
-  prefix_detection:
-    ignore_binary_files: true
 
 requirements:
   build:
