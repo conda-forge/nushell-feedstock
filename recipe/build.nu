@@ -13,6 +13,12 @@ $env.NU_VENDOR_AUTOLOAD_DIR = $'($env.PREFIX)/share/nushell/vendor/autoload'
 mkdir $env.NU_VENDOR_AUTOLOAD_DIR
 cp $'($env.RECIPE_DIR)/set-nu-lib-dirs.nu' $'($env.NU_VENDOR_AUTOLOAD_DIR)/set-nu-lib-dirs.nu'
 
+# only needed because of https://github.com/prefix-dev/rattler-build/issues/2133
+# otherwise we could use the compile time variant instead
+# https://github.com/nushell/nushell/blob/0831ba3526482b5ef9461a3b6dc7abe275ccbfda/crates/nu-protocol/src/eval_const.rs#L285-L287
+mkdir $'($env.PREFIX)/etc/conda/env_vars.d'
+$'{"NU_VENDOR_AUTOLOAD_DIR":"($env.NU_VENDOR_AUTOLOAD_DIR)"}' | save -f $'($env.PREFIX)/etc/conda/env_vars.d/nushell.json'
+
 # Directory that contains `nu` code
 let nu_path = '.' | path expand
 
