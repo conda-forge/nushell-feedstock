@@ -1,0 +1,38 @@
+From 8aec4006ff9bfdb1e2908fb4d25e7744a18b2bae Mon Sep 17 00:00:00 2001
+From: Pavel Zwerschke <pavelzw@gmail.com>
+Date: Mon, 9 Feb 2026 02:25:30 +0100
+Subject: [PATCH] read vendor autoload files in non-interactive modes
+
+---
+ src/run.rs               | 10 ++++++
+ tests/integration/cli.rs | 71 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 81 insertions(+)
+
+diff --git a/src/run.rs b/src/run.rs
+index d54471a7cdd6e..2671e4eed2bce 100644
+--- a/src/run.rs
++++ b/src/run.rs
+@@ -79,6 +79,11 @@ pub(crate) fn run_commands(
+         }
+ 
+         perf!("read login.nu", start_time, use_color);
++
++        // load vendor and user autoload files
++        let start_time = std::time::Instant::now();
++        config_files::read_vendor_autoload_files(engine_state, &mut stack);
++        perf!("read vendor autoload files", start_time, use_color);
+     }
+ 
+     // Before running commands, set up the startup time
+@@ -158,6 +163,11 @@ pub(crate) fn run_file(
+             );
+         }
+         perf!("read config.nu", start_time, use_color);
++
++        // load vendor and user autoload files
++        let start_time = std::time::Instant::now();
++        config_files::read_vendor_autoload_files(engine_state, &mut stack);
++        perf!("read vendor autoload files", start_time, use_color);
+     }
+ 
+     // Regenerate the $nu constant to contain the startup time and any other potential updates

@@ -8,6 +8,8 @@ package:
 source:
   url: https://github.com/nushell/nushell/archive/refs/tags/${{ version }}.tar.gz
   sha256: e4c95f743cea3d985ab90e03fd35707a46eef926d407ed363f994155c1ca5055
+  patches:
+    - 0001-nu-vendor-autoload.patch
 
 build:
   number: 2
@@ -44,6 +46,7 @@ tests:
       recipe:
         - test-nu.nu
     script:
+      - nu -c 'print ($nu.vendor-autoload-dirs)'
       - nu --version
       - nu --help
       - nu test-nu.nu
