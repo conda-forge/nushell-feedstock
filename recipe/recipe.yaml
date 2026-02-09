@@ -36,9 +36,14 @@ tests:
       files:
         - bin/nu_plugin_*
         - etc/pixi/nu/global-ignore-conda-prefix
+        - share/nushell/vendor/autoload/set-nu-lib-dirs.nu
+        - etc/conda/test-files/nushell/0/test-nu.nu
       bin:
         - nu
-  - script:
+  - files:
+      recipe:
+        - test-nu.nu
+    script:
       - nu --version
       - nu --help
       - nu test-nu.nu
