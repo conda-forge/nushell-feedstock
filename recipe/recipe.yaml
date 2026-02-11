@@ -47,7 +47,9 @@ tests:
       recipe:
         - test-nu.nu
     script:
-      - nu -c "print ($nu.vendor-autoload-dirs)"
+      - if: unix
+        then: nu -c 'print ($nu.vendor-autoload-dirs)'
+        else: nu -c "print ($nu.vendor-autoload-dirs)"
       - nu --version
       - nu --help
       - nu -l test-nu.nu
