@@ -50,7 +50,7 @@ tests:
       recipe:
         - test-nu.nu
     script:
-      - nu -c 'print ($nu.vendor-autoload-dirs)'
+      - nu -c "print ($nu.vendor-autoload-dirs)"
       - nu --version
       - nu --help
       - nu test-nu.nu
