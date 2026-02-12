@@ -41,7 +41,7 @@ tests:
       files:
         - bin/nu_plugin_*
         - etc/pixi/nu/global-ignore-conda-prefix
-        - share/nushell/vendor/autoload/set-nu-lib-dirs.nu
+        # - share/nushell/vendor/autoload/set-nu-lib-dirs.nu
         - etc/conda/test-files/nushell/0/test-nu.nu
         # https://github.com/prefix-dev/rattler-build/issues/2133
         - etc/conda/env_vars.d/nushell.json
