@@ -12,7 +12,7 @@ $env.CARGO_PROFILE_RELEASE_STRIP = "symbols"
 # Conda will handle prefix replacement at install time.
 let nu_lib_dir = [$env.PREFIX "share" "nushell" "lib"] | path join
 mkdir $'($env.PREFIX)/etc/conda/env_vars.d'
-$'{"NU_LIB_DIRS":"($nu_lib_dir)"}' | save -f $'($env.PREFIX)/etc/conda/env_vars.d/nushell.json'
+{NU_LIB_DIRS: $nu_lib_dir} | to json -r | save -f $'($env.PREFIX)/etc/conda/env_vars.d/nushell.json'
 
 # Directory that contains `nu` code
 let nu_path = '.' | path expand
