@@ -6,8 +6,12 @@ package:
   version: ${{ version }}
 
 source:
-  url: https://github.com/nushell/nushell/archive/refs/tags/${{ version }}.tar.gz
-  sha256: e4c95f743cea3d985ab90e03fd35707a46eef926d407ed363f994155c1ca5055
+  url: https://github.com/nushell/nushell/archive/16cfe2a70cbc1fae6e7bc7fba284b6748c7c91f5.zip
+  sha256: a49c07fdc73c331e172a0a738bd6f164efec6d1431c6769618be93def685588b
+  # url: https://github.com/nushell/nushell/archive/refs/tags/${{ version }}.tar.gz
+  # sha256: e4c95f743cea3d985ab90e03fd35707a46eef926d407ed363f994155c1ca5055
+  patches:
+    - 0001-fix-env-nu-lib-dirs.patch
 
 build:
   number: 2
@@ -52,7 +56,14 @@ tests:
         else: nu -c "print ($nu.vendor-autoload-dirs)"
       - nu --version
       - nu --help
-      - nu -l test-nu.nu
+      - if: unix
+        then:
+          - mkdir -p $CONDA_PREFIX/share/nushell/lib
+          - echo "export def hi [] { \"foo\" }" > $CONDA_PREFIX/share/nushell/lib/foo.nu
+        else:
+          - mkdir %CONDA_PREFIX%\share\nushell\lib
+          - echo "export def hi [] { \"foo\" }" > %CONDA_PREFIX%\share\nushell\lib\foo.nu
+      - nu -c "use foo.nu hi; hi"
 
 about:
   homepage: https://nushell.sh
