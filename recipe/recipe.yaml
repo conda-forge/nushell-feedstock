@@ -57,7 +57,7 @@ tests:
           - echo "export def hi [] { \"foo\" }" > $CONDA_PREFIX/share/nushell/lib/foo.nu
         else:
           - mkdir %CONDA_PREFIX%\share\nushell\lib
-          - echo export def hi [] { "foo" } > %CONDA_PREFIX%\share\nushell\lib\foo.nu
+          - echo export def hi [] { "foo" }> %CONDA_PREFIX%\share\nushell\lib\foo.nu
       - nu -c "use foo.nu hi; hi"
 
 about:
