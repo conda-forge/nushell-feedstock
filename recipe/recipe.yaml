@@ -41,19 +41,14 @@ tests:
       files:
         - bin/nu_plugin_*
         - etc/pixi/nu/global-ignore-conda-prefix
-        # - share/nushell/vendor/autoload/set-nu-lib-dirs.nu
-        - etc/conda/test-files/nushell/0/test-nu.nu
         # https://github.com/prefix-dev/rattler-build/issues/2133
         - etc/conda/env_vars.d/nushell.json
       bin:
         - nu
-  - files:
-      recipe:
-        - test-nu.nu
-    script:
+  - script:
       - if: unix
-        then: nu -c 'print ($nu.vendor-autoload-dirs)'
-        else: nu -c "print ($nu.vendor-autoload-dirs)"
+        then: nu -c 'print ($NU_LIB_DIRS)'
+        else: nu -c "print ($NU_LIB_DIRS)"
       - nu --version
       - nu --help
       - if: unix
