@@ -9,18 +9,8 @@ $env.OPENSSL_DIR = $env.PREFIX
 $env.CARGO_BUILD_RUSTFLAGS = $'($env.CARGO_BUILD_RUSTFLAGS?) -L($env.PREFIX)/lib'
 $env.CARGO_PROFILE_RELEASE_STRIP = "symbols"
 
-$env.NU_VENDOR_AUTOLOAD_DIR = $'($env.PREFIX)/share/nushell/vendor/autoload'
-mkdir $env.NU_VENDOR_AUTOLOAD_DIR
-# Write set-nu-lib-dirs.nu with the expanded prefix path.
 # Conda will handle prefix replacement at install time.
 let nu_lib_dir = [$env.PREFIX "share" "nushell" "lib"] | path join
-# $'# Use a hardcoded path instead of $env.CONDA_PREFIX because it is not set in `pixi global install nushell`
-# $env.NU_LIB_DIRS ++= [r#'($nu_lib_dir)'#]
-# ' | save -f $'($env.NU_VENDOR_AUTOLOAD_DIR)/set-nu-lib-dirs.nu'
-
-# only needed because of https://github.com/prefix-dev/rattler-build/issues/2133
-# otherwise we could use the compile time variant instead
-# https://github.com/nushell/nushell/blob/0831ba3526482b5ef9461a3b6dc7abe275ccbfda/crates/nu-protocol/src/eval_const.rs#L285-L287
 mkdir $'($env.PREFIX)/etc/conda/env_vars.d'
 $'{"NU_LIB_DIRS":"($nu_lib_dir)"}' | save -f $'($env.PREFIX)/etc/conda/env_vars.d/nushell.json'
 
@@ -28,7 +18,6 @@ $'{"NU_LIB_DIRS":"($nu_lib_dir)"}' | save -f $'($env.PREFIX)/etc/conda/env_vars.
 let nu_path = '.' | path expand
 
 # Directory list for `nu_plugin_*` code
-#
 # Logic to identify plugin folder taken from nushell's homebrew formula
 # https://github.com/Homebrew/homebrew-core/blob/566df2fba07c4100481cfc893ebe7c55f7306bc9/Formula/n/nushell.rb#L42-L43
 let nu_plugin_paths = glob 'crates/nu_plugin_*'

@@ -1,20 +1,8 @@
-From 54e734e56cbc2232d711067aa2b5e084624dd3b1 Mon Sep 17 00:00:00 2001
-From: Pavel Zwerschke <pavelzw@gmail.com>
-Date: Thu, 12 Feb 2026 21:01:36 +0100
-Subject: [PATCH] fix $env.NU_LIB_DIRS behavior
-
----
- crates/nu-engine/src/env.rs                   | 31 +++++++++++------
- crates/nu-parser/src/parse_keywords.rs        | 34 +++++++++++--------
- .../nu-utils/src/default_files/doc_config.nu  |  4 +++
- tests/shell/mod.rs                            | 30 ++++++++++++++++
- 4 files changed, 73 insertions(+), 26 deletions(-)
-
 diff --git a/crates/nu-engine/src/env.rs b/crates/nu-engine/src/env.rs
-index 362466b20bbf1..20b8751064d3a 100644
+index 07c7a7346..4e8d44ed1 100644
 --- a/crates/nu-engine/src/env.rs
 +++ b/crates/nu-engine/src/env.rs
-@@ -275,17 +275,26 @@ pub fn find_in_dirs_env(
+@@ -271,17 +271,26 @@ pub fn find_in_dirs_env(
              return None;
          }
  
@@ -24,8 +12,8 @@ index 362466b20bbf1..20b8751064d3a 100644
 -            .iter()
 -            .map(|lib_dir| -> Option<PathBuf> {
 -                let dir = lib_dir.to_path().ok()?;
--                let dir_abs = exists_with(dir, &cwd)?;
--                exists_with(filename, dir_abs)
+-                let dir_abs = canonicalize_with(dir, &cwd).ok()?;
+-                canonicalize_with(filename, dir_abs).ok()
 -            })
 -            .find(Option::is_some)
 -            .flatten()
@@ -34,16 +22,16 @@ index 362466b20bbf1..20b8751064d3a 100644
 +            dirs.iter()
 +                .map(|lib_dir| -> Option<PathBuf> {
 +                    let dir = lib_dir.to_path().ok()?;
-+                    let dir_abs = exists_with(dir, &cwd)?;
-+                    exists_with(filename, dir_abs)
++                    let dir_abs = canonicalize_with(dir, &cwd).ok()?;
++                    canonicalize_with(filename, dir_abs).ok()
 +                })
 +                .find(Option::is_some)
 +                .flatten()
 +        } else if let Ok(dirs) = lib_dirs.as_str() {
 +            std::env::split_paths(dirs)
 +                .filter_map(|lib_dir| {
-+                    let dir_abs = exists_with(lib_dir, &cwd)?;
-+                    exists_with(filename, dir_abs)
++                    let dir_abs = canonicalize_with(&lib_dir, &cwd).ok()?;
++                    canonicalize_with(filename, dir_abs).ok()
 +                })
 +                .next()
 +        } else {
@@ -53,10 +41,10 @@ index 362466b20bbf1..20b8751064d3a 100644
  
      let lib_dirs = dirs_var.and_then(|var_id| engine_state.get_var(var_id).const_val.as_ref());
 diff --git a/crates/nu-parser/src/parse_keywords.rs b/crates/nu-parser/src/parse_keywords.rs
-index eb2899b7573d8..7f04778f9c49e 100644
+index 330ff2e9b..d2e71fda4 100644
 --- a/crates/nu-parser/src/parse_keywords.rs
 +++ b/crates/nu-parser/src/parse_keywords.rs
-@@ -4098,23 +4098,27 @@ pub fn find_in_dirs(
+@@ -4093,22 +4093,26 @@ pub fn find_in_dirs(
                  if let Some(lib_dirs) =
                      dirs_env.and_then(|dirs_env| working_set.get_env_var(dirs_env))
                  {
@@ -64,9 +52,8 @@ index eb2899b7573d8..7f04778f9c49e 100644
 -                        for lib_dir in dirs {
 -                            if let Ok(dir) = lib_dir.to_path() {
 -                                // make sure the dir is absolute path
--                                if let Ok(dir_abs) = absolute_with(dir, actual_cwd)
--                                    && let Ok(path) = absolute_with(filename, dir_abs)
--                                    && path.exists()
+-                                if let Ok(dir_abs) = canonicalize_with(dir, actual_cwd)
+-                                    && let Ok(path) = canonicalize_with(filename, dir_abs)
 -                                {
 -                                    return Some(path);
 -                                }
@@ -87,9 +74,8 @@ index eb2899b7573d8..7f04778f9c49e 100644
 +
 +                    for lib_dir in dir_candidates {
 +                        // Make sure the dir is absolute path.
-+                        if let Ok(dir_abs) = absolute_with(lib_dir, actual_cwd)
-+                            && let Ok(path) = absolute_with(filename, dir_abs)
-+                            && path.exists()
++                        if let Ok(dir_abs) = canonicalize_with(lib_dir, actual_cwd)
++                            && let Ok(path) = canonicalize_with(filename, dir_abs)
 +                        {
 +                            return Some(path);
 +                        }
@@ -99,73 +85,3 @@ index eb2899b7573d8..7f04778f9c49e 100644
                  } else {
                      None
                  }
-diff --git a/crates/nu-utils/src/default_files/doc_config.nu b/crates/nu-utils/src/default_files/doc_config.nu
-index 33126492baae9..de75b1fec2436 100644
---- a/crates/nu-utils/src/default_files/doc_config.nu
-+++ b/crates/nu-utils/src/default_files/doc_config.nu
-@@ -1072,6 +1072,8 @@ const NU_LIB_DIRS = []
- #     ($nu.data-dir | path join 'completions')
- # ]
- # An environment variable version ($env.NU_LIB_DIRS) is searched after the constant.
-+# If provided from the parent process, use the platform path-list separator
-+# (`:` on Unix, `;` on Windows), similar to PATH.
- 
- # NU_PLUGIN_DIRS (const): Directories searched for plugin binaries.
- # Default includes <config-dir>/plugins.
-@@ -1081,6 +1083,8 @@ const NU_PLUGIN_DIRS = []
- # const NU_PLUGIN_DIRS = [
- #     ($nu.default-config-dir | path join 'plugins')
- # ]
-+# If provided from the parent process, use the platform path-list separator
-+# (`:` on Unix, `;` on Windows), similar to PATH.
- 
- # -----------------
- # Path Manipulation
-diff --git a/tests/shell/mod.rs b/tests/shell/mod.rs
-index 19fd7d54bbf0c..2c1d4d10e9bdc 100644
---- a/tests/shell/mod.rs
-+++ b/tests/shell/mod.rs
-@@ -2,6 +2,7 @@ use nu_test_support::fs::Stub::{FileWithContent, FileWithContentToBeTrimmed};
- use nu_test_support::playground::Playground;
- use nu_test_support::{nu, nu_repl_code};
- use pretty_assertions::assert_eq;
-+use std::env::join_paths;
- 
- mod environment;
- mod pipeline;
-@@ -196,6 +197,35 @@ fn nu_lib_dirs_relative_script() {
-     })
- }
- 
-+#[test]
-+fn nu_lib_dirs_env_string() {
-+    Playground::setup("nu_lib_dirs_env_string", |dirs, sandbox| {
-+        sandbox
-+            .mkdir("lib_dir_1")
-+            .mkdir("lib_dir_2")
-+            .with_files(&[FileWithContentToBeTrimmed(
-+                "lib_dir_2/foo.nu",
-+                r#"
-+                    export def hi [] { "foo" }
-+                "#,
-+            )]);
-+
-+        let lib_dirs = join_paths([dirs.test().join("lib_dir_1"), dirs.test().join("lib_dir_2")])
-+            .expect("test paths should be joinable")
-+            .to_string_lossy()
-+            .into_owned();
-+
-+        let actual = nu!(
-+            cwd: dirs.test(),
-+            envs: vec![("NU_LIB_DIRS".to_string(), lib_dirs)],
-+            "use foo.nu hi; hi"
-+        );
-+
-+        assert!(actual.err.is_empty(), "stderr: {}", actual.err);
-+        assert_eq!(actual.out, "foo");
-+    })
-+}
-+
- #[test]
- fn run_script_that_looks_like_module() {
-     Playground::setup("run_script_that_looks_like_module", |dirs, _| {
