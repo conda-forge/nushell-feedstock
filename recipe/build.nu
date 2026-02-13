@@ -28,11 +28,11 @@ let license_dir = './license-files' | path expand
 mkdir $license_dir
 
 $nu_path
-| append $nu_plugin_paths
+# | append $nu_plugin_paths
 | each {
   let license_file = $in | path parse | get stem | $'($license_dir)/($in)_thirdparty_licenses.yaml'
 
   cd $in
-  ^cargo auditable install --locked --no-track --bins --root $env.PREFIX --path .
+  ^cargo auditable install --debug --locked --no-track --bins --root $env.PREFIX --path .
   ^cargo-bundle-licenses --format yaml --output $license_file
 }
