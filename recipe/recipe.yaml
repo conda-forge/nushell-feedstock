@@ -43,7 +43,14 @@ tests:
         # - bin/nu_plugin_*
         - etc/pixi/nu/global-ignore-conda-prefix
         # https://github.com/prefix-dev/rattler-build/issues/2133
-        - etc/conda/env_vars.d/nushell.json
+        - if: not win
+          then: etc/conda/env_vars.d/nushell.json
+        - if: win
+          then:
+            - etc/conda/activate.d/nushell_activate.bat
+            - etc/conda/activate.d/nushell_activate.sh
+            - etc/conda/deactivate.d/nushell_deactivate.bat
+            - etc/conda/deactivate.d/nushell_deactivate.sh
       bin:
         - nu
   - script:
