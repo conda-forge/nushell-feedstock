@@ -6,13 +6,11 @@ package:
   version: ${{ version }}
 
 source:
-  url: https://github.com/nushell/nushell/archive/95ad9f0ddb4e81130ecf6f9c88913921c5e84d37.tar.gz
-  sha256: aaaaa6dd298670348a11ed9a2a27ff8340750add6b977d8d6480dc2d027bb7f5
-  # url: https://github.com/nushell/nushell/archive/refs/tags/${{ version }}.tar.gz
-  # sha256: e4c95f743cea3d985ab90e03fd35707a46eef926d407ed363f994155c1ca5055
-  # patches:
-  #   # https://github.com/nushell/nushell/pull/17557
-  #   - 0001-fix-env-nu-lib-dirs.patch
+  url: https://github.com/nushell/nushell/archive/refs/tags/${{ version }}.tar.gz
+  sha256: e4c95f743cea3d985ab90e03fd35707a46eef926d407ed363f994155c1ca5055
+  patches:
+    # https://github.com/nushell/nushell/pull/17563
+    - 0001-fix-env-nu-lib-dirs.patch
 
 build:
   number: 2
@@ -39,8 +37,10 @@ requirements:
 tests:
   - package_contents:
       strict: true
+      bin:
+        - nu
       files:
-        # - bin/nu_plugin_*
+        - bin/nu_plugin_*
         - etc/pixi/nu/global-ignore-conda-prefix
         # https://github.com/prefix-dev/rattler-build/issues/2133
         - if: not win
@@ -51,8 +51,6 @@ tests:
             - etc/conda/activate.d/nushell_activate.sh
             - etc/conda/deactivate.d/nushell_deactivate.bat
             - etc/conda/deactivate.d/nushell_deactivate.sh
-      bin:
-        - nu
   - script:
       - if: unix
         then: nu -c 'print ($NU_LIB_DIRS)'
