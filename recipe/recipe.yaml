@@ -8,10 +8,14 @@ package:
 source:
   url: https://github.com/nushell/nushell/archive/refs/tags/${{ version }}.tar.gz
   sha256: e4c95f743cea3d985ab90e03fd35707a46eef926d407ed363f994155c1ca5055
+  patches:
+    # https://github.com/nushell/nushell/pull/17563
+    - 0001-fix-env-nu-lib-dirs.patch
 
 build:
-  number: 1
+  number: 2
   script: build.nu
+  # https://github.com/prefix-dev/rattler-build/issues/2133
   prefix_detection:
     ignore_binary_files: true
 
@@ -33,14 +37,34 @@ requirements:
 tests:
   - package_contents:
       strict: true
+      bin:
+        - nu
       files:
         - bin/nu_plugin_*
         - etc/pixi/nu/global-ignore-conda-prefix
-      bin:
-        - nu
+        # https://github.com/prefix-dev/rattler-build/issues/2133
+        - if: not win
+          then: etc/conda/env_vars.d/nushell.json
+        - if: win
+          then:
+            - etc/conda/activate.d/nushell_activate.bat
+            - etc/conda/activate.d/nushell_activate.sh
+            - etc/conda/deactivate.d/nushell_deactivate.bat
+            - etc/conda/deactivate.d/nushell_deactivate.sh
   - script:
+      - if: unix
+        then: nu -c 'print ($NU_LIB_DIRS)'
+        else: nu -c "print ($NU_LIB_DIRS)"
       - nu --version
       - nu --help
+      - if: unix
+        then:
+          - mkdir -p $CONDA_PREFIX/share/nushell/lib
+          - echo "export def hi [] { \"foo\" }" > $CONDA_PREFIX/share/nushell/lib/foo.nu
+        else:
+          - mkdir %CONDA_PREFIX%\share\nushell\lib
+          - echo export def hi [] { "foo" }> %CONDA_PREFIX%\share\nushell\lib\foo.nu
+      - nu -c "use foo.nu hi; hi"
 
 about:
   homepage: https://nushell.sh
