@@ -25,6 +25,8 @@ requirements:
     - cargo-bundle-licenses
     - cargo-auditable
     - nushell # script dependency
+    - if: osx-64
+      then: clangdev
   host:
     - zlib
     - openssl
