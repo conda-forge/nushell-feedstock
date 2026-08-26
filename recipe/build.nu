@@ -15,7 +15,7 @@ $env.AWS_LC_SYS_CMAKE_BUILDER = "1"
 # Conda will handle prefix replacement at install time.
 let nu_lib_dir = [$env.PREFIX "share" "nushell" "lib"] | path join
 
-if $env.target_platform == "win-64" {
+if ($env.target_platform | str starts-with "win-") {
     # prefix replacement doesn't work in this json because it needs \\ instead of \
     # otherwise a broken json will be generated
     let activate_d = $'($env.PREFIX)/etc/conda/activate.d'
