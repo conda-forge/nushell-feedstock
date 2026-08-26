@@ -8,6 +8,9 @@ touch $'($env.PREFIX)/etc/pixi/nu/global-ignore-conda-prefix'
 $env.OPENSSL_DIR = $env.PREFIX
 $env.CARGO_BUILD_RUSTFLAGS = $'($env.CARGO_BUILD_RUSTFLAGS?) -L($env.PREFIX)/lib'
 $env.CARGO_PROFILE_RELEASE_STRIP = "symbols"
+# Use cmake to build aws-lc-sys, because conda's CFLAGS inject -O2 which
+# overrides the -O0 required by jitterentropy-base.c, causing a build failure.
+$env.AWS_LC_SYS_CMAKE_BUILDER = "1"
 
 # Conda will handle prefix replacement at install time.
 let nu_lib_dir = [$env.PREFIX "share" "nushell" "lib"] | path join

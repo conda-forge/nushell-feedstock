@@ -27,6 +27,9 @@ requirements:
     - nushell # script dependency
     - if: osx-64
       then: clangdev
+    - cmake
+    - if: unix
+      then: make
   host:
     - zlib
     - openssl
