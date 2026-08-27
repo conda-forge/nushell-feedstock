@@ -10,7 +10,7 @@ source:
   sha256: 06df93281a0f858019d09ea6cf821b19a7cd9017cdfb9e898cfe8dd4bd8101c2
 
 build:
-  number: 1
+  number: 2
   script: build.nu
   # https://github.com/prefix-dev/rattler-build/issues/2133
   prefix_detection:
