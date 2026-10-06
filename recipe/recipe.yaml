@@ -25,8 +25,10 @@ requirements:
     - cargo-bundle-licenses
     - cargo-auditable
     - nushell # script dependency
-    - if: osx-64
-      then: clangdev
+    # cc-rs passes `--target=<arch>-apple-macosx` to clang which then can't find
+    # the triple-prefixed conda linker and falls back to Xcode's ld (aws-lc-sys)
+    - if: osx
+      then: ld64
     - cmake
     - if: unix
       then: make
